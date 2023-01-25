@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import './App.css';
 import {Game} from "./components/Game";
 import {Result} from "./components/Result";
 import {getQuestionsThunk} from "./redux/thunk";
 import {useDispatch, useSelector} from "react-redux";
 import {questionsSelector} from "./redux/selectors";
+import { ProgressBar } from './components/ProgressBar';
 
 const questions =  [
 
@@ -38,7 +39,7 @@ const questions =  [
 function App() {
   const questions = useSelector(questionsSelector);
   const [step, setStep] = useState(0);
-  let [correct, setCorrect] = useState(0);
+  const [correct, setCorrect] = useState(0);
   const dispatch = useDispatch();
   const question = questions[step];
   const onAnswering = (index:number) => {
@@ -53,6 +54,11 @@ function App() {
   const checkCorr = () => {
     setCorrect(correct +1);
   };
+  const reload = useCallback(() => {
+    dispatch(getQuestionsThunk())
+    setStep(0);
+    setCorrect(0);
+  },[])
   useEffect(() => {
     if (questions.length == 0) {
       dispatch(getQuestionsThunk())
@@ -61,9 +67,11 @@ function App() {
   return (
       <div className="App">
         {
-          step === questions.length ? (<Result correct={correct} questions={questions} />) : (<Game onAnswering={onAnswering} question={question}></Game>
+          step === questions.length ? (<Result reload={reload} correct={correct} questions={questions} />) : (<Game onAnswering={onAnswering} question={question}></Game>
           )
         }
+        <ProgressBar lenght={questions.length} step={step} />
+
       </div>
 
   );

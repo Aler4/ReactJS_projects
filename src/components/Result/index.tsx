@@ -4,9 +4,10 @@ import "./style.scss"
 type TProp = {
     correct: number,
     questions: object[],
+    reload: () => void,
 }
 
-export const Result: FC<TProp> = ({correct,questions}) => {
+export const Result: FC<TProp> = ({correct,questions, reload}) => {
     console.log(correct)
     return (
         <div className="wrapper-result">
@@ -15,6 +16,9 @@ export const Result: FC<TProp> = ({correct,questions}) => {
                 <h2>
                     Ви відповіли правильно на <span className={correct >= Math.round((questions.length / 2)) ? "res_pos" : "res_neg"}>{correct}</span> з {questions.length} запитань...
                 </h2>
+                <button className='btn' onClick={reload}>
+                    Нова гра
+                </button>
             </div>
         </div>
 
