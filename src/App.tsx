@@ -1,80 +1,55 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
+import logo from './logo.svg';
 import './App.css';
-import {Game} from "./components/Game";
-import {Result} from "./components/Result";
-import {getQuestionsThunk} from "./redux/thunk";
 import {useDispatch, useSelector} from "react-redux";
-import {questionsSelector} from "./redux/selectors";
-import { ProgressBar } from './components/ProgressBar';
+import {getCurrenciesThunk} from "./redux/thunks";
+import {
+  currenciesSelector, isErrorSelector, isLoadSelector,
+  titlesSelector
+} from "./redux/selectors";
+import {Header, Converter} from './components';
 
-const questions =  [
-
-  {
-    title: 'Abondon',
-    answers: ['Відвлікатись',"Покидати","Шукати"],
-    correct: 1,
-  },
-  {
-    title: 'PaPavel',
-    answers: ['Сутулий, Пес, Геї, пупок коня'],
-    correct: 0,
-  },
-  {
-    title: 'Ability',
-    answers: ["Здатність",'Можливість',"Покидати"],
-    correct: 0,
-  },
-  {
-    title: 'Able',
-    answers: ["Працьовитий","Здатний","Дивний"],
-    correct: 1,
-  },
-  // {
-  //   title: 'Absorb',
-  //   answers: ["Прати","Шкодити","Поглинати"],
-  //   correct: 2,
-  // },
-];
 
 function App() {
-  const questions = useSelector(questionsSelector);
-  const [step, setStep] = useState(0);
-  const [correct, setCorrect] = useState(0);
-  const dispatch = useDispatch();
-  const question = questions[step];
-  const onAnswering = (index:number) => {
-    if (step != questions.length) {
-      setStep(step+1)
-    }
-    if (index === question.correct){
-        setCorrect(correct +1);
-        console.log(correct)
-    }
-  };
-  const checkCorr = () => {
-    setCorrect(correct +1);
-  };
-  const reload = useCallback(() => {
-    dispatch(getQuestionsThunk())
-    setStep(0);
-    setCorrect(0);
-  },[])
+  let titles = useSelector(titlesSelector)
+  let currencies = useSelector(currenciesSelector);
+  let dispatch = useDispatch();
+  let isLoad = useSelector(isLoadSelector);
+  let isFalse = useSelector(isErrorSelector);
+
+
+
+
   useEffect(() => {
-    if (questions.length == 0) {
-      dispatch(getQuestionsThunk())
+    if(currencies.length === 0) {
+      dispatch(getCurrenciesThunk(titles));
     }
-  },[questions])
-  return (
-      <div className="App">
-        {
-          step === questions.length ? (<Result reload={reload} correct={correct} questions={questions} />) : (<Game onAnswering={onAnswering} question={question}></Game>
-          )
-        }
-        <ProgressBar lenght={questions.length} step={step} />
+  },[]);
 
-      </div>
 
-  );
+
+  useEffect(() => {
+    console.log(12312312)
+  },[])
+
+  if(isLoad) {
+    return (<h1 style={{textAlign: 'center'}}>
+          Завантаження данних...
+          </h1>)
+  }
+  if(isFalse) {
+    return (<h1 style={{textAlign: 'center'}}>
+          Ой, щось трапилось, спробуйте пізніше
+          </h1>)
+  }
+  else {
+    return (<div className="App">
+          <Header currencies={currencies} />
+          <Converter currencies={currencies} />
+        </div>
+    );
+  }
+
 }
 
 export default App;
