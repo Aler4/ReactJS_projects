@@ -13,9 +13,10 @@ import {Header, Converter} from './components';
 function App() {
   let titles = useSelector(titlesSelector)
   let currencies = useSelector(currenciesSelector);
-  let dispatch = useDispatch();
   let isLoad = useSelector(isLoadSelector);
   let isFalse = useSelector(isErrorSelector);
+  let dispatch = useDispatch();
+
 
 
 
@@ -25,12 +26,6 @@ function App() {
       dispatch(getCurrenciesThunk(titles));
     }
   },[]);
-
-
-
-  useEffect(() => {
-    console.log(12312312)
-  },[])
 
   if(isLoad) {
     return (<h1 style={{textAlign: 'center'}}>
